@@ -4,4 +4,5 @@ Rails.application.routes.draw do
   resource :profile
 
   post '/login', to: 'profiles#login'
+  get 'profile/:id', to: 'profiles#show'
 end

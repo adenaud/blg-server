@@ -3,14 +3,15 @@ class ProfilesController < ApplicationController
   before_filter :set_headers
 
   def show
-    render nothing: true
+    user_uuid = params['id']
+    render json: User.find_by(uuid: user_uuid)
   end
 
   def create
     uuid = SecureRandom.uuid
     content = request.body.read
     json = JSON.parse content
-    json['uuid'] = uuid;
+    json['uuid'] = uuid
     User.create(json)
     render json: {:status => 0, :uuid => uuid}
   end
@@ -36,13 +37,16 @@ class ProfilesController < ApplicationController
 
     if count == 1
       user = User.find_by(email: identifier)
-      if user.password.equal? password
+      if user.password.eql? password
         result['status'] = 0
+        result['message'] = 'LOGIN_OK'
       else
         result['status'] = 1
+        result['message'] = 'INVALID_PASSWORD'
       end
     else
       result['status'] = 2
+      result['message'] = 'INVALID_EMAIL'
     end
 
     render json: result
