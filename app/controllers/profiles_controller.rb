@@ -12,16 +12,41 @@ class ProfilesController < ApplicationController
     json = JSON.parse content
     json['uuid'] = uuid;
     User.create(json)
-    render json: { :status => 0, :uuid => uuid }
+    render json: {:status => 0, :uuid => uuid}
   end
 
   def update
     content = request.body.read
     json = JSON.parse content
     uuid = json['uuid']
-    profile =  User.find_by(uuid: uuid)
+    profile = User.find_by(uuid: uuid)
     profile.update(json)
     render json: 0
+  end
+
+  def login
+    content = request.body.read
+    json = JSON.parse content
+    identifier = json['identifier']
+    password = json['password']
+
+    count = User.where(email: identifier).count
+
+    result = Hash.new
+
+    if count == 1
+      user = User.find_by(email: identifier)
+      if user.password.equal? password
+        result['status'] = 0
+      else
+        result['status'] = 1
+      end
+    else
+      result['status'] = 2
+    end
+
+    render json: result
+
   end
 
   def set_headers
