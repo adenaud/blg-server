@@ -7,7 +7,7 @@ class AlertsController < ApplicationController
   GEOCODING_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json?'
 
   def index
-    render plain: Alert.all.to_json(:include => :user)
+    render plain: Alert.all.to_json(:include => [:user, :operator])
   end
 
   def create
@@ -34,6 +34,10 @@ class AlertsController < ApplicationController
     result = Hash.new
     result['status'] = 0
     render json: result
+  end
+
+  def options
+    render plain: 'ok'
   end
 
   private
