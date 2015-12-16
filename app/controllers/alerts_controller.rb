@@ -7,7 +7,7 @@ class AlertsController < ApplicationController
   GEOCODING_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json?'
 
   def index
-    render plain: Alert.where(active: false).to_json(:include => [:user, :operator])
+    render plain: Alert.where(active: true).to_json(:include => [:user, :operator])
   end
 
   def create
