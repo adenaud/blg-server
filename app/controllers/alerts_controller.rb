@@ -31,8 +31,9 @@ class AlertsController < ApplicationController
     uuid = json['uuid']
     alert =  Alert.find_by(uuid: uuid)
     alert.update(json)
-
-    render json: 0
+    result = Hash.new
+    result['status'] = 0
+    render json: result
   end
 
   private

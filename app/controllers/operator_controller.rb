@@ -19,6 +19,7 @@ class OperatorController < ApplicationController
       operator = Operator.find_by(login: login)
       if operator.password.eql? hashed_password
         result['status'] = 0
+        result['id'] = operator.id
         result['message'] = 'LOGIN_OK'
       else
         result['status'] = 1
