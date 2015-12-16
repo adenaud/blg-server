@@ -11,6 +11,11 @@ class ProfilesController < ApplicationController
     uuid = SecureRandom.uuid
     content = request.body.read
     json = JSON.parse content
+
+    md5 = Digest::MD5.new
+    password = json['password']
+    md5.update password
+    json['password'] = md5.hexdigest
     json['uuid'] = uuid
     User.create(json)
     render json: {:status => 0, :uuid => uuid}
@@ -19,27 +24,38 @@ class ProfilesController < ApplicationController
   def update
     content = request.body.read
     json = JSON.parse content
+
+    md5 = Digest::MD5.new
+    password = json['password']
+    md5.update password
+    json['password'] = md5.hexdigest
     uuid = json['uuid']
     profile = User.find_by(uuid: uuid)
     profile.update(json)
-    render json: 0
+    result = Hash.new
+    result['status'] = 0
+    render json: result
   end
 
   def login
     content = request.body.read
     json = JSON.parse content
+    md5 = Digest::MD5.new
+
     identifier = json['identifier']
     password = json['password']
+    md5.update password
+    hashed_password = md5.hexdigest
 
     count = User.where(email: identifier).count
 
     result = Hash.new
-
     if count == 1
       user = User.find_by(email: identifier)
-      if user.password.eql? password
+      if user.password.eql? hashed_password
         result['status'] = 0
         result['message'] = 'LOGIN_OK'
+        result['uuid'] = user.uuid
       else
         result['status'] = 1
         result['message'] = 'INVALID_PASSWORD'
@@ -48,9 +64,7 @@ class ProfilesController < ApplicationController
       result['status'] = 2
       result['message'] = 'INVALID_EMAIL'
     end
-
     render json: result
-
   end
 
   def set_headers
