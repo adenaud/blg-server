@@ -36,6 +36,10 @@ class AlertsController < ApplicationController
     render json: result
   end
 
+  def options
+    render plain: 'ok'
+  end
+
   private
 
   def set_headers
